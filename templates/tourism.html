@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Tourism{% endblock title %}
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand mx-2" href="#">Jungle Safari</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+              <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link active" href="/tourism">Tourism</a>
+             
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="/booking">Booking</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="/MyBookings">MyBookings</a>
+        </li>
+
+          <li class="nav-item">
+              <a class="nav-link" href="/contactus">Contact Us</a>
+          </li>
+          
+      </ul> 
+      
+  </div>
+</nav>
+
+
+<div class="container my-4">
+  <div class="row mb-2">
+
+
+{% comment %} testing for dynamic data {% endcomment %}
+{% for i in lst %}
+
+<div class="col-md-6">
+  <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+    <div class="col p-4 d-flex flex-column position-static">
+      <strong class="d-inline-block mb-2 text-success">{{i.district}}</strong>
+      <h3 class="mb-0">{{i.name}}</h3>
+
+      <p class="mb-auto">
+     {{i.small_desc}}
+      </p>
+      <a href="/information?place_code={{i.place_code}}" class="stretched-link">Continue reading</a>
+    </div>
+    <div class="col-auto d-none d-lg-block">
+      <img class="bd-placeholder-img" width="200" height="250" src="{{i.tab_img.url}}" alt="" />
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+<button type="button" onclick="Booking()" class="btn btn-success px-0 my-2 py-1 ">Book Your Tickets..</button>
+<script>
+  function Booking(){
+    window.location="/booking"
+  }
+</script>
+
+
+
+{% endblock body%}

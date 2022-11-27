@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Booking Info{% endblock title %}
+{% block body %}
+
+<style>
+
+
+</style>
+
+    
+<script type="text/javascript">
+    {% if booking_data %}
+    var table_data_js='<tr>';
+        {% for i in booking_data %}
+        persons_name = '{{i.persons_name}}';
+        persons_adhar = '{{i.persons_adhar}}';
+        persons_age = '{{i.persons_age}}';
+        persons_gender =' {{i.persons_gender}}';
+       
+              
+				let person_array = persons_name.split('*');
+				let adhar_array = persons_adhar.split('*');
+				let age_array = persons_age.split('*');
+				let gender_array = persons_gender.split('*');
+                let  counter=0;
+                for(let i = 0;i<{{i.count}};i++)
+                { 
+                    table_data_js=table_data_js+'<td>'+person_array[counter+1]+'</td><td>'+adhar_array[counter+1]+'</td><td>'+gender_array[counter+1]+'</td><td>'+age_array[counter+1]+'</td><td>500</td></tr>';
+                    $("#display_data").html(table_data_js);
+                    counter++;
+                }
+                {% endfor %}
+       
+     {% endif %}
+</script>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark m-0 navbar-radius" style="border-radius:0px">
+    <a class="navbar-brand mx-2" href="#">Jungle Safari</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/tourism">Tourism</a>
+            </li>
+        </ul>
+    </div>
+  </nav>
+  
+
+{% if booking_data %}
+<table class="table">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Adhar</th>
+        <th scope="col">Gender</th>
+        <th scope="col">Age</th>
+        <th scope="col">Prices</th>
+    </tr>
+    <tbody  id="display_data">
+
+    </tbody>
+
+</thead>
+
+  </table>
+
+{% else %}
+
+<h3 align='center' style='color:red'>No Booking Data Found.<br> Invalid Booking Id </h3>
+{% endif %}
+
+{% endblock body %}

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% block title %}Check Booking {% endblock title %}
+{% block body %}
+{% load static %}
+<link rel="stylesheet" type='text/css' href="{% static 'booking.css' %}"/>
+<link rel="stylesheet" type='text/css' href="{% static 'bootstrap.min.css'%}"/>
+
+<script type="text/javascript">
+            
+  //  <!-- ----------------scripts for Prevent Form From Reloading & Submittimg The SignIn Form------------------- -->
+  $(document).on("submit", "#check_form", function (e) {
+    document.getElementById("check_btn").disabled = true;
+    var spinner =
+      '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div>';
+    $("#check_btn").html(spinner);
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: "/check_avalibility",
+      data: {
+        place_code: $("#place_code").val(),
+        date: $("#date").val(),
+        slot: $("#slot").val(),
+        count: $("#count").val(),
+        csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+      },
+      success: function (data) {
+
+        place_code= $("#place_code").val();
+        date= $("#date").val();
+        slot=$("#slot").val();
+        count= $("#count").val();
+        if (data != -1) {
+          $("#check_btn").text("Check");
+          count = $("#count").val();
+          if(data>=count){
+            swal("Seats Avalible!!", "<h3><b>Number Of Avalible Seats.</b><h2>"+data+"</h2></h3>", "success");
+            my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);    window.location = "/booking2?place_code="+place_code+"&date="+date+"&slot="+slot+"&count="+count+"";},2000);
+          }
+          else if(data<count && data>0){
+            swal("Less Number of Seats!", "<h3><b>We have "+data+" Seats Avalible <br>Please Select Different Slots</b><h3>", "info");
+              my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);    window.location = "/booking";},1200);
+          }
+          else{
+            swal("HouseFull!", "<h3><b>Please Select Different Slots.</b><h3>", "warning");
+              my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);   window.location = "/booking";},1200);
+          }
+        } 
+        else {
+          $("#check_btn").text("Check");
+          document.getElementById("check_btn").disabled = false;
+          sweetAlert(
+            "Error!!",
+            "<b><b style='color:red';>Something Went Wrong...</b>..!</b>",
+            "error"
+          );
+        }
+      },
+      error: function (response) {
+        alert("Something Went Wrong...");
+      },
+    });
+  });
+</script>
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark m-0 navbar-radius" style="border-radius:0px">
+    <a class="navbar-brand mx-2" href="#">Jungle Safari</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/tourism">Tourism</a>
+               
+            </li>
+  
+            <li class="nav-item">
+              <a class="nav-link active" href="/booking">Booking</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/MyBookings">MyBookings</a>
+          </li>
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/contactus">Contact Us</a>
+            </li>
+            
+  
+  
+        </ul>
+        
+        
+    </div>
+  </nav>
+  
+
+  <div id="booking" class="section">
+    <div class="section-center">
+        <div class="container">
+            <div class="div1">
+                <div class="col-md-7 col-md-push-5">
+                    <div class="booking-cta">
+                        <h1>Make your reservation...</h1>
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-md-pull-7">
+                    <div class="booking-form">
+                        <form id="check_form" class="pb-4">
+                          {% csrf_token %}
+                            <div class="form-group">
+                                <span class="form-label">Your Destination</span>
+                                <select id="place_code" class="form-control" placeholder="Choose Your Sanctuary...">
+                                    <option value="1">karnala Wildlife Sanctuary</option>
+                                    <option value="2">Melghat Wildlife Sanctuary</option>
+                                    <option value="3">Bor Wildlife Sanctuary</option>
+                                    <option value="4">Bhimashankar Wildlife Sanctuary</option>
+                                    <option value="5">Tadoba Wildlife Sanctuary</option>
+                                    <option value="6">karhandla Wildlife Sanctuary</option>
+                                    <option value="7">Radhanagari Wildlife Sanctuary</option>
+                                    <option value="8">Navegaon Wildlife Sanctuary</option>
+                                    <option value="9">Pench Wildlife Sanctuary</option>
+                                    <option value="10">Nagzira Wildlife Sanctuary</option>
+                                    <option value="11">Sagareshawar Wildlife Sanctuary</option>
+                                    <option value="12">Sanjay Gandhi National Park</option>
+                                </select>
+                                <span class="select-arrow"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <span class="form-label">Select Date</span>
+                                        <input id="date" class="form-control" type="date" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <span class="form-label">Select Slot</span>
+                                        <select id="slot" class="form-control">
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                        </select>
+                                        <span class="select-arrow"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <span class="form-label">No Of Persons</span>
+                                        <select id="count" class="form-control">
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                        <span class="select-arrow"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div class="form-btn mb-3">
+                                <button style="margin: 0px 10px 0px 60px" id="check_btn" type="submit" class="submit-btn">Check</button>
+                              </div>  
+                      </form>
+                            
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    {% comment %} dependancy For js for send message {% endcomment %}
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"> </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    
+    {% endblock body %}

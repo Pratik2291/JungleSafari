@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block title %}Conform Booking {% endblock title %}
+{% block body %}
+{% load static %}
+<link rel="stylesheet" type='text/css' href="{% static 'booking.css' %}"/>
+<link rel="stylesheet" type='text/css' href="{% static 'bootstrap.min.css'%}"/>
+
+<script type="text/javascript">
+	
+	{% if sign_in == 0 %}
+				swal("Sign In Required!", "<h3><b>Please Sign In.</b><h3>", "error");
+				my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);    window.location = "/";},1400);
+	{% endif %}
+
+//<-------------------------Function for Conform Booking  Start from Here--------------->
+
+
+	$(document).on("submit", "#post-form", function (e) {
+		e.preventDefault();
+		document.getElementById("book_btn").disabled = true;
+		var spinner =
+		  '<div class="spinner-border" role="status"><span class="visually-hidden">Loading... </span></div> Saving info..';
+		$("#book_btn").html(spinner);
+		$.ajax({
+		  type: "POST",
+		  url: "/booking2",
+		  data: {
+			name: $("#name_string").val(),
+			adhar: $("#adhar_string").val(),
+			gender: $("#gender_string").val(),
+			age: $("#age_string").val(),
+			count: "{{count}}",
+			slot: "{{slot}}",
+			place_code: "{{place_code}}",
+			date: $("#date").val(),
+			csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+		  },
+		  success: function (data) {
+			$("#sign_up").text("Book Now");
+			if (data == "1") {
+			  swal("Success!!", "<b>Booked Succesfully..</b>", "success");
+			  speek_data("Booking Detail saved..");
+			  my_timeout = setTimeout(()=>{ clearTimeout(my_timeout);    window.location = "/"},2000);
+			} else{
+			  sweetAlert("Error!!","<b><b style='color:red';>Something Went wrong<br>may Be Seat is Full..</b>..!</b>","error");
+			  $("#book_btn").text("Book Now");
+			  document.getElementById("book_btn").disabled = false;
+			}
+		  },
+		  error: function (response) {
+			alert("Something Went Wrong...");
+		  },
+		});
+	  });
+
+
+
+
+
+
+
+//<-------------------------Function for Add Person And Adhar Card Start from Here--------------->
+
+	var person_name_string="";
+	var adhar_string=""
+	var age_string=""
+	var gender_string=""
+	var counter=0;
+	var table_data_js='<tr>';
+
+	function check_validity(name,adhar,gender,age){
+		var flag = 1;
+		if(name == "" || name == null){flag=0;}
+		if((adhar == "" || adhar == null)||(adhar.length>12||adhar.length<12)){flag=0;}
+		if((age == "" || age == null)||(age <0 || age >80)){flag=0;}
+			return flag;
+	}
+	function clearInput(){
+ 		document.getElementById("name").value='';
+		document.getElementById("adhar").value='';
+		document.getElementById("gender").value='Male'; 
+		document.getElementById("age").value='';
+	}
+
+	function AddPersonAndAdhar(){
+		var name = document.getElementById("name").value;
+		var adhar = document.getElementById("adhar").value;
+		var gender = document.getElementById("gender").value;
+		var age = document.getElementById("age").value;
+		if(check_validity(name,adhar,gender,age)){
+				person_name_string=person_name_string+"*"+name;
+				adhar_string=adhar_string+"*"+adhar;
+				age_string=age_string+"*"+age;
+				gender_string=gender_string+"*"+gender;
+				clearInput();
+
+				let person_array = person_name_string.split('*');
+				let adhar_array = adhar_string.split('*');
+				let age_array = age_string.split('*');
+				let gender_array = gender_string.split('*');
+				table_data_js=table_data_js+'<td>'+person_array[counter+1]+'</td><td>'+adhar_array[counter+1]+'</td><td>'+gender_array[counter+1]+'</td><td>'+age_array[counter+1]+'</td><td>500</td></tr>';
+				$("#display_data").html(table_data_js);
+				$("#adhar_string").val(adhar_string);
+				$("#name_string").val(person_name_string);
+				$("#gender_string").val(gender_string);
+				$("#age_string").val(age_string);
+				counter++;
+				if(counter=={{count}}){
+
+					document.getElementById("book_btn").disabled = false;
+					document.getElementById("add_btn").disabled = true;
+				}
+		}
+
+		else{
+				alert("Please Input Valid Data..");
+				swal("Invalid Input..","<h2>May Be Blank Places Or Invalid Age Input Added </h2>","error");
+		}
+
+	}
+
+
+//<-------------------------Function for Add Person And Adhar Card Ends from Here--------------->
+
+
+</script>
+
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark m-0 navbar-radius" style="border-radius:0px">
+    <a class="navbar-brand mx-2" href="#">Jungle Safari</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/tourism">Tourism</a>
+            </li>
+        </ul>
+    </div>
+  </nav>
+  
+
+
+	<div id="booking" class="section">
+		<div class="section-center">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-7 col-md-push-5">
+						<table class="table">
+							<thead class="thead-dark">
+								<tr>
+									<th scope="col">Name</th>
+									<th scope="col">Adhar</th>
+									<th scope="col">Gender</th>
+									<th scope="col">Age</th>
+									<th scope="col">Prices</th>
+								</tr>
+								<tbody  id="display_data">
+					
+								</tbody>
+					
+							</thead>
+					
+						</table>
+					</div>
+					<div class="col-md-4 col-md-pull-7">
+						<div class="booking-form">
+							<form id="post-form">
+								{% csrf_token %}
+								<div class="form-group">
+									<span class="form-label">Your Destination</span>
+									{% if place_name %}
+									<input disabled class="form-control" type="text"  value="{{place_name}}">
+									{% endif %}
+								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<span class="form-label">Date</span>
+											{% if date %}
+											<input id="date" disabled class="form-control" value="{{date}}" type="date" required>
+											{% endif %}
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="form-group">
+											<span  class="form-label"> Slot</span>
+											{% if slot %}
+											<input  disabled class="form-control" type="text"  value="{{slot}}">
+											{% endif %}
+                                       
+                                        <span class="select-arrow"></span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<span class="form-label">Enter Name</span>
+									<input class="form-control"   type="text" id="name" placeholder="Enter Your Name">
+								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<span class="form-label">Age</span>
+                                        <input class="form-control" id="age" type="number" >
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="form-group">
+											<span class="form-label">Gender</span>
+                                        <select id="gender" class="form-control">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <span class="select-arrow"></span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<span class="form-label">Your Aadhar Number</span>
+									<input id="adhar" class="form-control" type="number"  placeholder="Enter your Aadhar Number">
+								</div>
+								<div class="col-sm-6">
+									<div class="form-btn">
+										<button type="button" id="add_btn" onclick="AddPersonAndAdhar()" class="btn btn-success px-4 py-3">Add</button>
+									</div>
+								  </div>
+								
+								  <div class="form-group">
+									<input id="adhar_string" class="form-control" type="hidden" value=''>
+									<input id="name_string" class="form-control" type="hidden" value=''>
+									<input id="gender_string" class="form-control" type="hidden" value=''>
+									<input id="age_string" class="form-control" type="hidden" value=''>
+								</div>
+								<div class="form-btn">
+									<button type="submit" id="book_btn" class="submit-btn" disabled >Book Now</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+</div>
+{% comment %} <!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+     {% endcomment %}
+    {% endblock body %}
