@@ -7,8 +7,28 @@ from django.core.mail import send_mail
 import random
 from django.db.models import Sum
 from datetime import datetime
-from home.models import Destination , Booking , Contactus
+from home.models import Destination , Booking 
 from django.contrib import messages
+
+
+
+
+
+# <------------------Global Method Send Email Function Start here ------------------------------>
+def send_email(sub,message,reciver_email):
+    try:
+        send_mail(
+        ''+sub+'',
+        ''+message+'',
+        'inft.20101a0019@gmail.com',
+        [reciver_email],
+        fail_silently=False,
+        )
+        return 1
+    except:
+        return 0
+
+
 
 
 
@@ -88,8 +108,13 @@ def booking2(request):
             date = request.POST.get("date")
             destination_data =Destination.objects.filter(place_code=place_code).values('name')
             place_name=destination_data[0]["name"]
-            user = Booking.objects.create(booking_id=booking_id_generate(),slot=slot,date=date,booking_owner=request.user.username,
+            booking_id=booking_id_generate()
+            user = Booking.objects.create(booking_id=booking_id,slot=slot,date=date,booking_owner=request.user.username,
             persons_adhar=adhar,count=count,persons_name=name,place_code=place_code,persons_age=age,persons_gender=gender,place_name=place_name).save()
+            sub = 'About Booking'
+            message = f'Your Booking for {place_name} is done....On Date {date} for slot {slot} and no. of person {count}. Your booking ID is -->  {booking_id} '
+            reciver_email = request.user.email
+            send_email(sub,message,reciver_email)
             return HttpResponse("1")
 
         else:
@@ -111,17 +136,17 @@ def booking2(request):
     return render(request,'booking2.html',context={"sign_in":0,'count':0,})
     
 
-def contactus(request):
-     if request.method == "POST":
-        name = request.POST['name']
-        email = request.POST['email']
-        phonenumber = request.POST['phonenumber']
-        desc = request.POST['desc']
-        print(name,email,phonenumber,desc)
-        contactus = Contactus(name=name, email=email, phonenumber=phonenumber, desc=desc, date=datetime.today())
-        contactus.save()
-        messages.success(request, 'Your form has been submitted...')
-     return render(request,'contactus.html')
+# def contactus(request):
+#      if request.method == "POST":
+#         name = request.POST['name']
+#         email = request.POST['email']
+#         phonenumber = request.POST['phonenumber']
+#         desc = request.POST['desc']
+#         print(name,email,phonenumber,desc)
+#         contactus = Contactus(name=name, email=email, phonenumber=phonenumber, desc=desc, date=datetime.today())
+#         contactus.save()
+#         messages.success(request, 'Your form has been submitted...')
+#      return render(request,'contactus.html')
 
 def MyBookings(request):
     if request.user.is_authenticated:
@@ -150,19 +175,6 @@ def booking_info(request):
 
     
 
-# <------------------Global Method Send Email Function Start here ------------------------------>
-def send_email(sub,message,reciver_email):
-    try:
-        send_mail(
-        ''+sub+'',
-        ''+message+'',
-        'agrorent2022@gmail.com',
-        [reciver_email],
-        fail_silently=False,
-        )
-        return 1
-    except:
-        return 0
 
 
 # <------------------Autintication sign in sign up class start here------------------------------>

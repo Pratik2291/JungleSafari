@@ -34,7 +34,7 @@ class Booking(models.Model):
     persons_adhar = models.TextField(blank=True , null = True)
     persons_gender = models.TextField(blank=True , null = True)
     persons_age= models.TextField(blank=True , null = True)
-    count= models.CharField(max_length=5 ,default=0)
+    count= models.IntegerField(max_length=5 ,default=0)
     slot= models.CharField(max_length=40)
     date= models.DateField(blank=True)
 
@@ -45,12 +45,12 @@ class Booking(models.Model):
 
 
 
-class Contactus(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    phonenumber = models.CharField(max_length=12)
-    desc = models.TextField()
-    date = models.DateField()
+# class Contactus(models.Model):
+#     name = models.CharField(max_length=100)
+#     email = models.CharField(max_length=100)
+#     phonenumber = models.CharField(max_length=12)
+#     desc = models.TextField()
+#     date = models.DateField()
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name

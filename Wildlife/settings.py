@@ -116,6 +116,17 @@ USE_I18N = True
 USE_TZ = True
 
 
+#Note :- Added Menually Not From Preadded
+#EMAIL- SMTP FROM GMAIL
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST= "smtp.gmail.com"
+EMAIL_PORT= 587
+EMAIL_HOST_USER ='inft.20101a0019@gmail.com'
+EMAIL_HOST_PASSWORD = "yetggakbabixmjxf"
+EMAIL_USE_TLS = True
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -134,5 +145,5 @@ STATICFILES_DIRS = [
 ]
 
 
-MEDIA_URL ='/media/'
+MEDIA_URL ='/media/' 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
